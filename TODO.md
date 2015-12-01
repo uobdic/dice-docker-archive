@@ -1,0 +1,7 @@
+ - perfsonar bandwidth
+ - perfsonar latency
+ - CMSSW
+ - base application (conda, build essentials)
+ - ROOT6 + Python 2.7
+ - ROOT6 + Python 3
+ - analysis/topquark
