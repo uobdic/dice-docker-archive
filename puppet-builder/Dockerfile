@@ -1,4 +1,4 @@
-FROM kreczko/centos6-vanilla
+FROM kreczko/centos6
 MAINTAINER Luke Kreczko
 
 RUN yum -y update && yum -y install rubygems \
