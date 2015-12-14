@@ -9,4 +9,4 @@ RUN cd /etc/puppet/modules && git clone https://github.com/ktf/puppet-cmsdist cm
 RUN cd /etc/puppet/modules/cmsdist && git checkout ac5133e
 
 ADD manifest.pp /manifest.pp
-RUN puppet apply -d --modulepath=/etc/puppet/modules /manifest.pp
+RUN puppet apply --modulepath=/etc/puppet/modules /manifest.pp

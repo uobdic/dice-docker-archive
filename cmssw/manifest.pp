@@ -4,8 +4,11 @@
 $scram_arch = 'slc6_amd64_gcc491'
 $cmssw_version = '7_4_12'
 file {'/etc/sudoers.d/999-cmsbuild-requiretty':
-   content => 'Defaults:root !requiretty\n',
-}->
+   content => "Defaults:root !requiretty\n",
+}
+
+user {'cmsbuild': }
+
 package {'cms+cmssw+CMSSW_7_4_12':
   ensure             => present,
   provider           => cmsdist,  
@@ -15,9 +18,11 @@ package {'cms+cmssw+CMSSW_7_4_12':
     'architecture'   => $scram_arch,    
     'server'         => 'cmsrep.cern.ch',
     'server_path'    => 'cmssw/cms',
-  }]
-}->
-package {'cms+local-cern-siteconf+sm111124': # this needs to change!
+  }],
+  require 			 => [File['/etc/sudoers.d/999-cmsbuild-requiretty'], User['cmsbuild']],
+}
+
+package {'cms+local-cern-siteconf+sm111124': # this needs to change! Figure out how to list available
   ensure             => present,
   provider           => cmsdist,
   install_options    => [{
@@ -26,13 +31,16 @@ package {'cms+local-cern-siteconf+sm111124': # this needs to change!
     'architecture'   => $scram_arch,
     'server'         => 'cmsrep.cern.ch',
     'server_path'    => 'cmssw/cms',
-  }]
-}->
+  }],
+  require 			 => [File['/etc/sudoers.d/999-cmsbuild-requiretty'], User['cmsbuild']],
+}
+
 file {'/etc/profile.d/scram.sh':
   ensure   => present,
   content  => 'source /opt/cms/cmsset_default.sh\n\n',
   mode     => 755
-}->
+}
+
 file {'/etc/profile.d/scram.csh':
   ensure   => present,
   content  => 'source /opt/cms/cmsset_default.csh\n\n',
