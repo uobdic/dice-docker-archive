@@ -19,6 +19,7 @@ for line in proc.stdout:
         (_, dependency) = line.split(':')
         dependency = dependency.strip()
         dependencies.append(dependency)
+#         print 'RUN . ${{VO_CMS_SW_DIR}}/${{SCRAM_ARCH}}/external/apt/*/etc/profile.d/init.sh; apt-get install -y {0}'.format(dependency)
 proc.communicate()
         
 deps = ' '.join(dependencies)
