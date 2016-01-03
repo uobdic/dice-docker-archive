@@ -1,0 +1,25 @@
+---
+site: UKI-SOUTHGRID-BRIS-HEP
+cms-site: T2_UK_SGrid_Bristol
+squids:
+    - lcgsq1.phy.bris.ac.uk
+    - lcgsq2.phy.bris.ac.uk
+cvmfs_mounts:
+    - atlas.cern.ch:
+        cvmfs_quota_limit: 20000
+    - cms.cern.ch:
+        cvmfs_quota_limit: 20000
+        cvmfs_env_variables:
+            CMS_LOCAL_SITE: '/opt/cvmfs/cms.cern.ch/SITECONF/local'
+    - grid.cern.ch:
+        cvmfs_quota_limit: 5000
+    - lhcb.cern.ch:
+        cvmfs_quota_limit: 20000
+    - ilc.desy.de:
+        cvmfs_quota_limit: 5000
+        cvmfs_public_key: /etc/cvmfs/keys/desy.de.pub
+        cvmfs_server_url: 'http://grid-cvmfs-one.desy.de:8000/cvmfs/@fqrn@;http://cvmfs-stratum-one.cern.ch:8000/cvmfs/@fqrn@;http://cvmfs-egi.gridpp.rl.ac.uk:8000/cvmfs/@fqrn@'
+cvmfs_server_url: 'http://cernvmfs.gridpp.rl.ac.uk:8000/opt/@org@;http://cvmfs-stratum-one.cern.ch:8000/opt/@org@; http://cvmfs.racf.bnl.gov:8000/opt/@org@'
+cvmfs_http_proxy: 'http://lcgsq1.phy.bris.ac.uk:3128|http://lcgsq2.phy.bris.ac.uk:3128'
+cvmfs_cache_base: '/var/cache/cvmfs2'
+    
