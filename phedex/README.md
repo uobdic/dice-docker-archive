@@ -1,0 +1,1 @@
+Basic phedex installation on Centos 6
