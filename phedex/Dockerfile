@@ -19,4 +19,5 @@ RUN source $sw/$myarch/external/apt/*/etc/profile.d/init.sh && apt-cache search 
 ENV version 4.1.7-comp
 RUN source $sw/$myarch/external/apt/*/etc/profile.d/init.sh && apt-get install cms+PHEDEX+$version -y
 RUN source $sw/$myarch/external/apt/*/etc/profile.d/init.sh && apt-get clean
+RUN ln -s $sw/$myarch/cms/PHEDEX/$version $sw/PHEDEX
 USER root
