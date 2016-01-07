@@ -1,5 +1,6 @@
 FROM kreczko/centos6
-MAINTAINER Luke Kreczko
+
+MAINTAINER Luke Kreczko <kreczko@cern.ch>
 
 RUN rpm --import https://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs
 RUN rpm -ivh http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm

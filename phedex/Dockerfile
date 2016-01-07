@@ -1,5 +1,5 @@
 FROM kreczko/centos6
-MAINTAINER Luke Kreczko
+MAINTAINER Luke Kreczko <kreczko@cern.ch>
 
 RUN yum update -y
 RUN yum install -y wget git sudo HEP_OSlibs_SL6 e2fsprogs
