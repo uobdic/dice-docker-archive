@@ -41,4 +41,4 @@ RUN . ${VO_CMS_SW_DIR}/${SCRAM_ARCH}/external/apt/*/etc/profile.d/init.sh;apt-ge
 
 # change back to root user
 USER root
-RUN echo "source /opt/cms/cmsset_default.sh\n\n" > /etc/profile.d/scram.sh
+RUN echo "source /opt/cms/cmsset_default.sh" > /etc/profile.d/scram.sh
