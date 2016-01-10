@@ -1,9 +1,6 @@
 #!/bin/sh -ex
 
-source /opt/cms/cmsset_default.sh
-scram project CMSSW_7_4_12
-cd CMSSW_7_4_12
+source ${VO_CMS_SW_DIR}/cmsset_default.sh
+cd /home/cms/cmssw/src
 eval `scram run -sh`
-mkdir -p /data
-cd /data
 cmsRun myPythonConfig.py
