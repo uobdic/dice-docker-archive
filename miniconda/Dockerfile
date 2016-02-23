@@ -23,11 +23,6 @@ ENV PATH /opt/conda/bin:$PATH
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-RUN conda install anaconda-client
-RUN conda create -q -n ntuple python=2.7 nose pytest flake8 gcc && \
-    source activate ntuple && \
-    conda install -q -c https://conda.anaconda.org/nlesc root rootpy
-
 ENTRYPOINT [ "/usr/bin/tini", "--" ]
 
 CMD ["/bin/bash"]    
