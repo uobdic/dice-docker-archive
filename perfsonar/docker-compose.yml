@@ -1,0 +1,23 @@
+# This describes one possible configuration of a perfsonar service:
+
+
+version: "2"
+services:
+  # bandwidth test controller
+  bwctl:
+    build: ./bwctl
+    image: bwctl
+    networks:
+      -host
+  # One Way Active Measurement Protocol
+  owamp:
+    build: ./owamp
+    image: owamp
+    networks:
+      -host
+  registration:
+    build: ./registration
+    networks:
+      -host
+  web:
+    build: ./base
