@@ -4,18 +4,22 @@ import json
 import os
 import six
 from units import fmtscaled
+import cache
+import copy
 
 PHEDEX_API_URL = 'https://cmsweb.cern.ch/phedex/datasvc/json'
 PHEDEX_INSTANCE = 'prod'
 PHEDEX_REQUEST_TEMPLATE = 'https://cmsweb.cern.ch/phedex/{instance}/Request::View?request={request_id}'
 SITE = None
 
-REQUEST_CACHE = {}
+REQUEST_CACHE = cache.SubscriptionCache.get()
 
 
 def _getTransferRequest(request_id):
+    global REQUEST_CACHE
+    request_id = str(request_id)
     if REQUEST_CACHE.has_key(request_id):
-        return REQUEST_CACHE[request_id]
+        return copy.deepcopy(REQUEST_CACHE[request_id])
     global SITE
     params = [
         ('request', request_id),
@@ -51,10 +55,10 @@ def _summariseSubscription(subscription):
     request = _getTransferRequest(request_id)
     subscription.update(request)
     subscription['request_id'] = request_id
-    subscription['request_url'] = PHEDEX_REQUEST_TEMPLATE.format(
-        instance = PHEDEX_INSTANCE,
-        request_id = request_id
-    )
+    #subscription['request_url'] = PHEDEX_REQUEST_TEMPLATE.format(
+    #    instance = PHEDEX_INSTANCE,
+    #    request_id = request_id
+    #)
     del subscription['request']
 
     return subscription
@@ -62,18 +66,26 @@ def _summariseSubscription(subscription):
 
 def _extractDatasetInfo(result):
     datasets = result['phedex']['dataset']
-    summarised_datasets = []
     retain = ['files', 'name', 'bytes', 'subscription']
-
     for dataset in datasets:
+        subscription = None
+        if dataset.has_key('block'):
+            # block types have 1 or more blocks, each with a subscription
+            subscription = dataset['block'][0]['subscription'][0]
+        else:
+            subscription = dataset['subscription'][0]
         dataset = _cleanDictionary(dataset, retain)
-        dataset.update(_summariseSubscription(
-            dataset['subscription'][0]))
-        del dataset['subscription']
+        dataset.update(_summariseSubscription(subscription))
+        if dataset.has_key('subscription'):
+            del dataset['subscription']
         dataset['bytes_raw'] = dataset['bytes']
         dataset['bytes'] = fmtscaled(dataset['bytes'], unit='B')
-
-    return datasets
+    import pandas as pd
+    df = pd.DataFrame(datasets)
+    df.to_csv('df.csv', sep=' ')
+    global REQUEST_CACHE
+    cache.SubscriptionCache.set(REQUEST_CACHE)
+    return df
 
 
 def _transformParams(params):
@@ -101,9 +113,10 @@ def getSubscriptions(site, since=1481500800, test=False):
     SITE = site
     result = None
     if test:
-        test_file = os.path.join(os.path.dirname(__file__), 'test.txt')
-        with open(test_file) as f:
-            result = json.loads(f.read())
+        result = copy.deepcopy(cache.PhedexCache.get())
+        #test_file = os.path.join(os.path.dirname(__file__), 'full_qry.txt')
+        #with open(test_file) as f:
+        #    result = json.loads(f.read())
     else:
         params = [
             ('create_since', since),
