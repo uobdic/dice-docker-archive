@@ -7,3 +7,5 @@ wsgiref
 six
 bokeh
 pandas
+plotly
+Flask-SocketIO
