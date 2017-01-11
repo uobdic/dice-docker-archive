@@ -12,6 +12,9 @@ from bokeh.resources import INLINE
 from bokeh.util.string import encode_utf8
 from bokeh.charts import Bar
 
+from units import fmtscaled
+import pandas as pd
+
 
 app = Flask('PhEDEx site mon')
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
@@ -39,44 +42,44 @@ def hello():
 @app.route('/test')
 #@cache.cached(timeout=60)
 def test():
+    pd.set_option('display.max_colwidth', -1)
     provider = str(os.environ.get('PROVIDER', 'world'))
     site = os.environ.get('SITE', 'T2_UK_SGrid_Bristol')
     datasets = getSubscriptions(site, test=True)
     template = '{:<50} {:<10} {:<10}'
     lines = [template.format('Name', 'group', 'request')]
 
-    grouped_by_user = datasets.groupby(['requested_by_name'])['bytes_raw'].sum()
-    #print datasets.groupby('requested_by_name').groups
-    #print grouped.sum()
+    datasets = datasets[datasets['group'] == 'local']
 
-    for g in grouped_by_user:
-        print 'Total', g
-    import pandas as pd
-    #test = pd.DataFrame({'usage': datasets.groupby(['requested_by_name'])['bytes_raw'].sum()}).reset_index()
-    #print test
+    grouped_by_user = datasets.groupby(['requested_by_name'])
+    datasets_by_user = datasets[['requested_by_name', 'name', 'bytes']].groupby(datasets['requested_by_name'])
 
     test = pd.DataFrame(
         {
-            'usage': datasets.groupby(['requested_by_name'])['bytes_raw'].sum()
-        }).reset_index()
-    #test['group'] = datasets[test['requested_by_name']]
+            'usage': grouped_by_user['bytes_raw'].sum(),
+        }
+        ).sort_values('usage', ascending=False).reset_index()
+
+    users = datasets['requested_by_name'].unique()
+
+
+    datasets_by_user_str = ''
+    for user in users:
+        data = datasets[datasets['requested_by_name']==user].sort_values('bytes_raw', ascending=False).reset_index()
+        datasets_by_user_str += '<h1>{0}</h1><br >'.format(user)
+        datasets_by_user_str += data[['name', 'bytes']].to_html()
+        datasets_by_user_str += '<br />'
+
     from units import fmtscaled
     from functools import partial
     scaleUnits = partial(fmtscaled, unit="B")
-    #test['usage'] = test['usage'].apply(scaleUnits)
-    #print test
-
-#    for dataset in datasets:
-#        print dataset.values, dataset
-#        name = dataset['name']
-#        group = dataset['group']
-#        request = dataset['requested_by_name']
-#        line = template.format(name, group, request)
-#        lines.append(line)
-#        break
+    test['usage_scaled'] = test['usage'].apply(scaleUnits)
 
     body = '<br>'.join(lines)
-    #body += '<br> RAW: <br>' + test.to_html()
+    body += '<br> RAW: <br>' + test[['requested_by_name', 'usage_scaled']].to_html()
+    body += datasets_by_user_str
+
+    body += '<br \>' + plot_bar(test)
 
     return plot(body, test)
 
@@ -84,9 +87,6 @@ def test():
 def plot(content, data=[]):
     x = list(range(0, 100 + 1))
     fig = figure(title="Polynomial")
-    print(dir(fig))
-    #fig.line(x, [i ** 2 for i in x], line_width=2)
-    #fig.hbar(data['requested_by_name'], data['usage'])
     p=Bar(data, 'requested_by_name', values='usage')
 
     js_resources = INLINE.render_js()
@@ -102,6 +102,56 @@ def plot(content, data=[]):
         content=content,
     )
     return encode_utf8(html)
+
+def plot_bar(df):
+    import plotly.plotly as py
+    import plotly.graph_objs as go
+    from plotly import offline
+
+    df = df.sort_values(['usage'])
+
+    data = [
+        go.Bar(
+            x=df['usage'], # assign x as the dataframe column 'x'
+            y=df['requested_by_name'],
+            orientation='h',
+            marker=dict(
+                #color='rgb(158,202,225)',
+                line=dict(
+                    color='rgb(8,48,107)',
+                    width=1.5,
+                )
+            ),
+        )
+    ]
+
+    maxName = df['requested_by_name'].apply(len).max()
+    layout = go.Layout(
+        title='Local CMS data usage',
+        #bargap = 0.9,
+        boxgap = 50,
+        barmode='stack',
+        margin=go.Margin(
+            l=maxName*7,
+            #r=50,
+            #b=100,
+            #t=200,
+            pad=10
+        ),
+        yaxis=dict(
+            autorange=True,
+            showgrid=False,
+            zeroline=False,
+            showline=False,
+            autotick=False,
+            showticklabels=True,
+        ),
+        xaxis=dict(
+            ticksuffix='B',
+        )
+    )
+    return offline.plot({'data': data, 'layout':layout},
+                        output_type='div')#, image_width=800)
 
 def _display_by_group(df):
     pass
