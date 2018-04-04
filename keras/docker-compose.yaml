@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  keras:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # NB_UID: ${USERID}
+        # HOST: $HOST
+        python_version: 3.6
+        cuda_version: 9.0
+        cudnn_version: 7
+    image: kreczko/keras-gpu
