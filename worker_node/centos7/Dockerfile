@@ -33,10 +33,13 @@ RUN wget https://archive.cloudera.com/cm5/redhat/7/x86_64/cm/cloudera-manager.re
  && yum -y install oracle-j2sdk1.7
 RUN wget https://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/cloudera-cdh5.repo -O /etc/yum.repos.d/cloudera.repo \
  && yum -y install hadoop-client
- RUN rm -f /etc/alternatives/hadoop-conf \
-  && rm -f /usr/bin/hadoop \
-  && ln -s /etc/hadoop/conf.cloudera.hdfs /etc/alternatives/hadoop-conf \
-  && ln -s /opt/cloudera/parcels/CDH/bin/hadoop /usr/bin/hadoop
+
+COPY hadoop-conf /etc/hadoop/conf.cloudera.hdfs
+
+RUN rm -f /etc/alternatives/hadoop-conf \
+ && rm -f /usr/bin/hadoop \
+ && ln -s /etc/hadoop/conf.cloudera.hdfs /etc/alternatives/hadoop-conf \
+ && ln -s /opt/cloudera/parcels/CDH/bin/hadoop /usr/bin/hadoop
 
 COPY test_script.sh /scripts/test_script.sh
 RUN chmod a+x /scripts/*

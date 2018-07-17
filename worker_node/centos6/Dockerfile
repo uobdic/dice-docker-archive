@@ -46,6 +46,9 @@ RUN wget https://archive.cloudera.com/cm5/redhat/6/x86_64/cm/cloudera-manager.re
  && yum -y install oracle-j2sdk1.7
 RUN wget https://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/cloudera-cdh5.repo -O /etc/yum.repos.d/cloudera.repo \
  && yum -y install hadoop-client
+
+COPY hadoop-conf /etc/hadoop/conf.cloudera.hdfs
+
 RUN rm -f /etc/alternatives/hadoop-conf \
  && rm -f /usr/bin/hadoop \
  && ln -s /etc/hadoop/conf.cloudera.hdfs /etc/alternatives/hadoop-conf \
