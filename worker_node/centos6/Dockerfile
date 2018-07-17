@@ -50,7 +50,7 @@ RUN wget https://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/cloudera-cdh5.rep
 COPY hadoop-conf /etc/hadoop/conf.cloudera.hdfs
 
 RUN rm -f /etc/alternatives/hadoop-conf \
- && rm -f /usr/bin/hadoop \
+ && mv /usr/bin/hadoop{,.local} \
  && ln -s /etc/hadoop/conf.cloudera.hdfs /etc/alternatives/hadoop-conf \
  && ln -s /opt/cloudera/parcels/CDH/bin/hadoop /usr/bin/hadoop
 
