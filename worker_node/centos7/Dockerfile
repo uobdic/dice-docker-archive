@@ -45,3 +45,9 @@ COPY test_script.sh /scripts/test_script.sh
 RUN chmod a+x /scripts/*
 
 COPY 00_grid_c7.sh /etc/profile.d/00_grid.sh
+
+# fixes
+RUN mkdir -p /usersc /users /software /hdfs /storage /opt/cloudera
+
+RUN yum install -y python-argparse python-pip \
+ && yum clean all
