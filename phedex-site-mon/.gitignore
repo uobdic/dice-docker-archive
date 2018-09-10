@@ -1,0 +1,4 @@
+webapp/cache
+*.json
+*.txt
+*.csv
