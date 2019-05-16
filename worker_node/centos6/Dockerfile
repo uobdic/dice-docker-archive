@@ -19,7 +19,7 @@ RUN yum -y install yum-priorities \
  # Install glexec, lcmaps & lcas
  && yum -y install glexec mkgltempdir \
                     lcmaps lcmaps-plugins-verify-proxy lcmaps-plugins-basic lcmaps-plugins-voms lcmaps-plugins-c-pep \
-                    lcas lcas-plugins-basic lcas-plugins-voms \
+                    lcas lcas-plugins-basic lcas-plugins-voms sssd-client \
  && wget --no-check-certificate https://repo.gridpp.ac.uk/machinejobfeatures/mjf-scripts/00/RPMS/mjf-htcondor-00.19-1.noarch.rpm \
  && yum -y localinstall mjf-htcondor-00.19-1.noarch.rpm \
  && rm -f mjf-htcondor-00.19-1.noarch.rpm \
@@ -60,7 +60,11 @@ RUN chmod a+x /scripts/*
 COPY 00_grid_c6.sh /etc/profile.d/00_grid.sh
 
 # fixes
-RUN mkdir -p /usersc /users /software /hdfs /storage /opt/cloudera
+RUN mkdir -p /usersc /users /software /hdfs /storage /opt/cloudera \
+    /var/singularity/mnt/final/users /var/singularity/mnt/final/usersc
+
+RUN ln -s /bin/bash /usr/bin/bash \
+ && ln -s /bin/cat /usr/bin/cat
 
 RUN yum install -y python-argparse python-pip \
  && yum clean all

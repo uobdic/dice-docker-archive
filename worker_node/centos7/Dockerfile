@@ -8,7 +8,7 @@ RUN yum -y install yum-priorities \
  # EPEL
  && yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
  # Basic dependencies
- && yum -y install freetype expat gcc glibc-headers compat-expat1 compat-openldap time man unzip quota attr wget \
+ && yum -y install freetype expat gcc glibc-headers compat-expat1 compat-openldap time man unzip quota attr wget sssd-client \
  # Install HEP_OSlibs
  && yum -y install http://linuxsoft.cern.ch/wlcg/centos7/x86_64/HEP_OSlibs-7.2.6-1.el7.cern.x86_64.rpm \
  # Machine job features
